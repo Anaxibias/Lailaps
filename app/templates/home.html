@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <p>This is your dashboard.</p>
+{% else %}
+    <h1>Welcome to Job Clipper!</h1>
+    <p>Please log in or register to access your dashboard.</p>
+{% endif %}
+
+{% endblock %}

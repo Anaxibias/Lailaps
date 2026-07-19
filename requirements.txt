@@ -1,3 +1,12 @@
 Flask
 Flask-Cors
 psycopg[binary]
+psycopg2-binary
+flask-wtf
+email-validator
+bootstrap-flask
+flask-login
+Flask-SQLAlchemy
+Flask-Migrate
+python-dotenv
+watchdog

@@ -1,21 +1,34 @@
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app import db
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from app import db, login
 
-class User(db.Model):
+
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, nullable=False)
     email: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, nullable=False)
-    pw: so.Mapped[str] = so.mapped_column(sa.String(255), nullable=False)
+    password: so.Mapped[str] = so.mapped_column(sa.String(255), nullable=False)
     created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, default=datetime.utcnow)
 
     jobs: so.WriteOnlyMapped['Job'] = so.relationship(secondary='user_jobs', back_populates='users')
 
     def __repr__(self):
         return f'<User {self.username}>'
+    
+    def set_password(self, pw):
+        self.password = generate_password_hash(pw)
+
+    def check_password(self, pw):
+        return check_password_hash(self.password, pw)
+
+@login.user_loader
+def load_user(id):
+    return db.session.get(User, int(id))
 
 class Job(db.Model):
     __tablename__ = 'jobs'

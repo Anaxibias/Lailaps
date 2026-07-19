@@ -2,7 +2,7 @@ CREATE TABLE "users" (
   "id" SERIAL PRIMARY KEY,
   "username" varchar,
   "email" varchar,
-  "pw" varchar,
+  "password" varchar,
   "created_at" timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
