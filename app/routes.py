@@ -59,3 +59,9 @@ def dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     return render_template('dashboard.html')
+
+@app.route('/profile/<username>', methods=['GET'])
+@login_required
+def profile(username):
+    user = db.first_or_404(sa.select(User).where(User.username == username))
+    return render_template('profile.html', user=user)

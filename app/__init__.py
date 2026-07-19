@@ -7,6 +7,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.jinja_env.auto_reload = True
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)

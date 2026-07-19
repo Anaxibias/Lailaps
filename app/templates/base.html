@@ -10,16 +10,24 @@
     <body>
         <div class="navbar navbar-dark bg-dark py-3">
             <div class="container-fluid">
-                <span class="navbar-brand mb-0 fs-3 ps-3">Job Clipper</span>
+                <span class="navbar-brand mb-0">
+                    <a class="btn btn-dark ps-3 fs-2" href="{{ url_for('home')}}">Job Clipper</a>
+                </span>
                 {% if current_user.is_authenticated %}
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav mr-auto ps-3">
+                        {% if request.path == url_for('dashboard') %}
                         <li class="nav-item active">
-                            <a class="nav-link" href="/profile">Profile</a>
+                            <a class="nav-link" href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
                         </li>
+                        {% elif request.path == url_for('profile', username=current_user.username) %}
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        </li>
+                        {% endif %}
                         <li class="nav-item active">
                             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                         </li>
