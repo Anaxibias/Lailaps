@@ -69,7 +69,7 @@ def dashboard():
                 return redirect(url_for('dashboard'))
 
             # If not, proceed to add it
-            job = db.session.scalar(sa.select(Job).where(Job.source == job_url, Job.is_archived == False))
+            job = db.session.scalar(sa.select(Job).where(Job.source == job_url))
             
             if job is None:
                 job = Job(source=job_url, job_title="Unknown", company="Unknown", description="")
@@ -90,7 +90,10 @@ def dashboard():
     job_listings = db.session.execute(
         sa.select(Job, UserJob).join(UserJob).where(UserJob.user_id == current_user.id)
     ).all()
-    return render_template('dashboard.html', form=form, job_listings=job_listings)
+    user_jobs = db.session.execute(
+        sa.select(UserJob).where(UserJob.user_id == current_user.id)
+    ).all()
+    return render_template('dashboard.html', form=form, job_listings=job_listings, user_jobs=user_jobs, status_enum=list(StatusEnum))
 
 @app.route('/profile/<username>', methods=['GET'])
 @login_required

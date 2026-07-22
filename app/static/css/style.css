@@ -21,3 +21,7 @@ body {
     background-color: #343a40; /* Slightly lighter shade for hover state */
     border-color: #343a40;
 }
+
+.dropdown-toggle::after {
+    display: none;
+}
