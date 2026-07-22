@@ -1,10 +1,18 @@
 from typing import Optional
+import enum
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
+
+class StatusEnum(enum.Enum):
+    NOTAPPLIED = 'Not Applied'
+    APPLIED = 'Applied'
+    INTERVIEWING = 'Interviewing'
+    ACCEPTED = 'Offer Accepted'
+    ARCHIVED = 'Application Archived'
 
 
 class User(UserMixin, db.Model):
@@ -50,7 +58,7 @@ class UserJob(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('users.id'))
     job_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('jobs.id'))
     created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, default=datetime.utcnow)
-    applied: so.Mapped[Optional[bool]] = so.mapped_column(sa.Boolean, nullable=True)
-
+    application_status: so.Mapped[StatusEnum] = so.mapped_column(default=StatusEnum.NOTAPPLIED)
+    is_archived: so.Mapped[bool] = so.mapped_column(default=False)
     def __repr__(self):
         return f'<UserJob user_id={self.user_id} job_id={self.job_id}>'

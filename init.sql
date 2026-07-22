@@ -1,3 +1,5 @@
+CREATE TYPE statusenum AS ENUM ('Not Applied', 'Applied', 'Interviewing', 'Offer Accepted', 'Application Archived')
+
 CREATE TABLE "users" (
   "id" SERIAL PRIMARY KEY,
   "username" varchar,
@@ -20,5 +22,6 @@ CREATE TABLE "user_jobs" (
   "user_id" integer REFERENCES "users" ("id") DEFERRABLE INITIALLY IMMEDIATE,
   "job_id" integer REFERENCES "jobs" ("id") DEFERRABLE INITIALLY IMMEDIATE,
   "created_at" timestamp DEFAULT CURRENT_TIMESTAMP,
-  "applied" bool DEFAULT false
+  "application_status" statusenum DEFAULT 'Not Applied',
+  "is_archived" bool DEFAULT false
 );

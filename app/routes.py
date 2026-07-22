@@ -2,7 +2,7 @@ from urllib.parse import urlsplit
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
-from app.models import User, Job, UserJob
+from app.models import StatusEnum, User, Job, UserJob
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, JobUrlForm
 from app.dtos import TrackedJob
@@ -69,7 +69,7 @@ def dashboard():
                 return redirect(url_for('dashboard'))
 
             # If not, proceed to add it
-            job = db.session.scalar(sa.select(Job).where(Job.source == job_url))
+            job = db.session.scalar(sa.select(Job).where(Job.source == job_url, Job.is_archived == False))
             
             if job is None:
                 job = Job(source=job_url, job_title="Unknown", company="Unknown", description="")
@@ -115,5 +115,38 @@ def remove_job(id):
         flash('Job removed successfully.')
     else:
         flash('Could not find the specified job.')
+
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard/update-status/<int:id>', methods=['POST'])
+@login_required
+def update_status(id):
+    status_str = request.form.get('status')
+    app_status = StatusEnum(status_str)
+
+    job_to_update = db.session.scalar(sa.select(UserJob).where(UserJob.job_id == id, UserJob.user_id == current_user.id))
+
+    if job_to_update:
+        job_to_update.application_status = app_status
+        db.session.commit()
+        flash('Application status updated.', 'success')
+    else:
+        flash('Job not found.', 'danger')
+    
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard/archive/<int:id>', methods=['POST'])
+@login_required
+def archive_application(id):
+
+    job_to_update = db.session.scalar(sa.select(UserJob).where(UserJob.job_id == id, UserJob.user_id == current_user.id))
+
+    if job_to_update:
+        job_to_update.is_archived = True
+        job_to_update.application_status = StatusEnum.ARCHIVED
+        db.session.commit()
+        flash('Application archived', 'success')
+    else:
+        flash('Job not found.', 'danger')
 
     return redirect(url_for('dashboard'))
