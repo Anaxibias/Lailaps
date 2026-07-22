@@ -5,6 +5,19 @@ body {
     background-image: radial-gradient(ellipse at top, #155e48, #171f3b);
     background-repeat: no-repeat;
     min-height: 100vh;
-    font-family:'Gill Sans', 'Gill Sans MT', sans-serif;
+    font-family:'Merriweather Sans', sans-serif;
     color: #dbdbdb;
+}
+
+/* Custom button style to match header */
+.btn-primary {
+    background-color: #212529; /* Matches Bootstrap's bg-dark */
+    border-color: #212529;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #343a40; /* Slightly lighter shade for hover state */
+    border-color: #343a40;
 }

@@ -1,9 +1,11 @@
+from flask import flash
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, URL, Regexp
 import sqlalchemy as sa
 from app import db
-from app.models import User
+from app.models import User, Job, UserJob
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -27,3 +29,7 @@ class RegistrationForm(FlaskForm):
         user = db.session.scalar(sa.select(User).where(User.email == email.data))
         if user is not None:
             raise ValidationError('An account already exists for this email address. Please sign in or use a different email address')
+        
+class JobUrlForm(FlaskForm):
+    url = StringField('Enter job URL', validators=[DataRequired(), URL(message="Invalid URL"), Regexp(r'^https://.*', message='URL Not Secure')])
+    submit = SubmitField('Save Job')

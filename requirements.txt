@@ -10,3 +10,4 @@ Flask-SQLAlchemy
 Flask-Migrate
 python-dotenv
 watchdog
+gunicorn
