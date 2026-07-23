@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
 from app.models import StatusEnum, User, Job, UserJob
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, JobUrlForm
+from app.forms import LoginForm, RegistrationForm, JobUrlForm, InfoForm
 from app.dtos import TrackedJob
 
 @app.route('/index')
@@ -57,10 +57,12 @@ def register():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    form = JobUrlForm()
+    url_form = JobUrlForm()
+    info_form = InfoForm()
     if request.method == 'POST':
-        if form.validate():
-            job_url = form.url.data
+
+        if url_form.submit.data and url_form.validate_on_submit():
+            job_url = url_form.url.data
             
             existing_job = db.session.scalar(current_user.jobs.select().where(Job.source == job_url))
             
@@ -77,14 +79,39 @@ def dashboard():
             job.users.add(current_user)
             db.session.add(job)
             db.session.commit()
+        
+        elif info_form.submit.data and info_form.validate_on_submit():
+            title = info_form.job_title.data
+            company = info_form.job_company.data
+
+            existing_job = db.session.scalar(current_user.jobs.select().where(Job.job_title == title, Job.company == company))
+
+            if existing_job:
+
+                flash('FIXME - need verification message popup')
+                return redirect(url_for('dashboard'))
+
+            job = db.session.scalar(sa.select(Job).where(Job.job_title == title, Job.company == company))
+
+            if job is None:
+                job = Job(source="", job_title=title, company=company, description="")
+                
             
-            flash('Job saved!', 'success')
-            return redirect(url_for('dashboard'))
+            job.users.add(current_user)
+            db.session.add(job)
+            db.session.commit()
+
         else:
-            for field, errors in form.errors.items():
+            return redirect(url_for('dashboard'))
+        '''
+            for field, errors in url_form.errors.items():
                 for error in errors:
                     flash(f"{error}", 'danger')
-            return redirect(url_for('dashboard'))
+        '''
+            
+
+        flash('Job saved!', 'success')
+        return redirect(url_for('dashboard'))
     
     # GET request logic
     job_listings = db.session.execute(
@@ -93,7 +120,7 @@ def dashboard():
     user_jobs = db.session.execute(
         sa.select(UserJob).where(UserJob.user_id == current_user.id)
     ).all()
-    return render_template('dashboard.html', form=form, job_listings=job_listings, user_jobs=user_jobs, status_enum=list(StatusEnum))
+    return render_template('dashboard.html', url_form=url_form, info_form=info_form, job_listings=job_listings, user_jobs=user_jobs, status_enum=list(StatusEnum))
 
 @app.route('/profile/<username>', methods=['GET'])
 @login_required

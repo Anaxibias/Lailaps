@@ -33,3 +33,8 @@ class RegistrationForm(FlaskForm):
 class JobUrlForm(FlaskForm):
     url = StringField('Enter job URL', validators=[DataRequired(), URL(message="Invalid URL"), Regexp(r'^https://.*', message='URL Not Secure')])
     submit = SubmitField('Save Job')
+
+class InfoForm(FlaskForm):
+    job_title = StringField('Enter job title', validators=[DataRequired()])
+    job_company = StringField('Enter company', validators=[DataRequired()])
+    submit = SubmitField('Add Job')

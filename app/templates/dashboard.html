@@ -6,11 +6,21 @@
 
     <div class="container-fluid px-0" style="max-width: 1600px; margin: 0 auto;">
         <form method="POST" action="{{ url_for('dashboard') }}">
-            {{ form.hidden_tag() }}
+            {{ url_form.hidden_tag() }}
             <div class="input-group mb-3">
-                {{ form.url.label(class="form-label visually-hidden") }}
-                {{ form.url(class="form-control", placeholder="Enter Job URL") }}
-                {{ form.submit(class="btn btn-primary") }}
+                {{ url_form.url.label(class="form-label visually-hidden") }}
+                {{ url_form.url(class="form-control", placeholder="Enter Job URL") }}
+                {{ url_form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+        <form method="POST" action="{{ url_for('dashboard') }}">
+            {{ info_form.hidden_tag() }}
+            <div class="input-group mb-3">
+                {{ info_form.job_title.label(class="form-label visually-hidden") }}
+                {{ info_form.job_title(class="form-control", placeholder="Enter Job Title") }}
+                {{ info_form.job_company.label(class="form-label visually-hidden") }}
+                {{ info_form.job_company(class="form-control", placeholder="Enter Company Name") }}
+                {{ info_form.submit(class="btn btn-primary") }}
             </div>
         </form>
         <div class="mt-4">
