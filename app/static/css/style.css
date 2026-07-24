@@ -25,3 +25,18 @@ body {
 .dropdown-toggle::after {
     display: none;
 }
+
+.badge-not-applied {
+    background-color: #C49F1B;
+    color: #212529; /* Setting text color to white for better contrast */
+}
+
+.badge-applied {
+    background-color: #2DA883;
+    color: #212529;
+}
+
+.badge-interviewing {
+    background-color: #6F81C8;
+    color: #212529;
+}
