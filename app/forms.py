@@ -37,4 +37,4 @@ class JobUrlForm(FlaskForm):
 class InfoForm(FlaskForm):
     job_title = StringField('Enter job title', validators=[DataRequired()])
     job_company = StringField('Enter company', validators=[DataRequired()])
-    submit = SubmitField('Add Job')
+    submit = SubmitField('Save Job')
