@@ -2,10 +2,10 @@ from urllib.parse import urlsplit
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sa
-from app.models import StatusEnum, User, Job, UserJob
+from app.models import StatusEnum, User
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, JobUrlForm, InfoForm
-from app.dtos import TrackedJob
+import app.services.job_services as job_services
 
 @app.route('/index')
 def index():
@@ -63,63 +63,47 @@ def dashboard():
 
         if url_form.submit.data and url_form.validate_on_submit():
             job_url = url_form.url.data
-            
-            existing_job = db.session.scalar(current_user.jobs.select().where(Job.source == job_url))
-            
-            if existing_job:
+
+            status = job_services.create_job_from_url(job_url, current_user.id, db)
+            if status is job_services.JobOperationStatus.UNSUPPORTED_DOMAIN:
+                flash('This domain is currently unsupported; manual entry of job details required')
+                return redirect(url_for('dashboard'))
+            if status is job_services.JobOperationStatus.EXISTS: 
                 flash('You have already saved this job.', 'warning')
                 return redirect(url_for('dashboard'))
-
-            # If not, proceed to add it
-            job = db.session.scalar(sa.select(Job).where(Job.source == job_url))
-            
-            if job is None:
-                job = Job(source=job_url, job_title="Unknown", company="Unknown", description="")
-            
-            job.users.add(current_user)
-            db.session.add(job)
-            db.session.commit()
+            elif status is job_services.JobOperationStatus.NOTFOUND:
+                flash('User not found', 'warning')
+                return redirect(url_for('dashboard'))
+            elif status is job_services.JobOperationStatus.COMMIT_FAILED:
+                flash('Internal Error. Job not saved', 'warning')
+            elif status is job_services.JobOperationStatus.CREATED:
+                flash('Job saved!', 'success')
+                return redirect(url_for('dashboard'))
         
         elif info_form.submit.data and info_form.validate_on_submit():
             title = info_form.job_title.data
             company = info_form.job_company.data
 
-            existing_job = db.session.scalar(current_user.jobs.select().where(Job.job_title == title, Job.company == company))
+            status = job_services.create_job_from_info(title, company, current_user.id, db)
 
-            if existing_job:
-
+            if status is job_services.JobOperationStatus.EXISTS: 
                 flash('FIXME - need verification message popup')
                 return redirect(url_for('dashboard'))
+            elif status is job_services.JobOperationStatus.NOTFOUND:
+                flash('User not found', 'warning')
+                return redirect(url_for('dashboard'))
+            elif status is job_services.JobOperationStatus.URL_NOTFOUND:
+                flash('Job saved, but automation could not find a matching URL. Edit your job record to add a URL', 'warning')
+                return redirect(url_for('dashboard'))
+            elif status is job_services.JobOperationStatus.COMMIT_FAILED:
+                flash('Internal Error. Job not saved', 'warning')
+            elif status is job_services.JobOperationStatus.CREATED:
+                flash('Job saved!', 'success')
+                return redirect(url_for('dashboard'))            
 
-            job = db.session.scalar(sa.select(Job).where(Job.job_title == title, Job.company == company))
-
-            if job is None:
-                job = Job(source="", job_title=title, company=company, description="")
-                
-            
-            job.users.add(current_user)
-            db.session.add(job)
-            db.session.commit()
-
-        else:
-            return redirect(url_for('dashboard'))
-        '''
-            for field, errors in url_form.errors.items():
-                for error in errors:
-                    flash(f"{error}", 'danger')
-        '''
-            
-
-        flash('Job saved!', 'success')
-        return redirect(url_for('dashboard'))
-    
     # GET request logic
-    job_listings = db.session.execute(
-        sa.select(Job, UserJob).join(UserJob).where(UserJob.user_id == current_user.id)
-    ).all()
-    user_jobs = db.session.execute(
-        sa.select(UserJob).where(UserJob.user_id == current_user.id)
-    ).all()
+
+    job_listings, user_jobs = job_services.get_job_listings(current_user.id, db)
     return render_template('dashboard.html', url_form=url_form, info_form=info_form, job_listings=job_listings, user_jobs=user_jobs, status_enum=list(StatusEnum))
 
 @app.route('/profile/<username>', methods=['GET'])
@@ -128,53 +112,41 @@ def profile(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
     return render_template('profile.html', user=user)
 
-@app.route('/dashboard/delete/<int:id>', methods=['POST'])
+@app.route('/dashboard/delete/<int:job_id>', methods=['POST'])
 @login_required
-def remove_job(id):
+def remove_job(job_id):
     # Find the association between the user and the job
-    job_to_delete = db.session.scalar(
-        sa.select(UserJob).where(
-            UserJob.job_id == id,
-            UserJob.user_id == current_user.id
-        )
-    )
 
-    if job_to_delete:
-        db.session.delete(job_to_delete)
-        db.session.commit()
+    status = job_services.delete_job(job_id, current_user.id, db)
+
+    if status is job_services.JobOperationStatus.DELETED:
         flash('Job removed successfully.')
     else:
         flash('Could not find the specified job.')
 
     return redirect(url_for('dashboard'))
 
-@app.route('/dashboard/update-status/<int:id>', methods=['POST'])
+@app.route('/dashboard/update-status/<int:job_id>', methods=['POST'])
 @login_required
-def update_status(id):
+def update_status(job_id):
     status_str = request.form.get('status')
-    app_status = StatusEnum(status_str)
 
-    job_to_update = db.session.scalar(sa.select(UserJob).where(UserJob.job_id == id, UserJob.user_id == current_user.id))
+    status = job_services.update_job_status(job_id, current_user.id, status_str, db)
 
-    if job_to_update:
-        job_to_update.application_status = app_status
-        db.session.commit()
+    if status == job_services.JobOperationStatus.UPDATED:
         flash('Application status updated.', 'success')
     else:
         flash('Job not found.', 'danger')
     
     return redirect(url_for('dashboard'))
 
-@app.route('/dashboard/archive/<int:id>', methods=['POST'])
+@app.route('/dashboard/archive/<int:job_id>', methods=['POST'])
 @login_required
-def archive_application(id):
+def archive_application(job_id):
 
-    job_to_update = db.session.scalar(sa.select(UserJob).where(UserJob.job_id == id, UserJob.user_id == current_user.id))
+    status = job_services.archive_job(job_id, current_user.id, db)
 
-    if job_to_update:
-        job_to_update.is_archived = True
-        job_to_update.application_status = StatusEnum.ARCHIVED
-        db.session.commit()
+    if status == job_services.JobOperationStatus.UPDATED:
         flash('Application archived', 'success')
     else:
         flash('Job not found.', 'danger')

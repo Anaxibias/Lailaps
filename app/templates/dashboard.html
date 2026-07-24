@@ -36,10 +36,10 @@
                                             <div class="col-md-4 text-start">
                                                 <p class="card-text mb-0">{{ row.Job.job_title }}</p>
                                             </div>
-                                            <div class="col-md-4 text-start">
+                                            <div class="col-md-3 text-start">
                                                 <p class="card-text mb-0">{{ row.Job.company }}</p>
                                             </div>
-                                            <div class="col-md-1 text-center">
+                                            <div class="col-md-1 d-flex justify-content-center">
                                                 <div class="dropdown">
                                                     {% set status_name = row.UserJob.application_status.value %}
 
@@ -59,7 +59,7 @@
                                                         {% for status in status_enum %}
                                                             {% if status.name != 'ARCHIVED' %}
                                                             <li>
-                                                                <form action="{{ url_for('update_status', id=row.Job.id) }}" method="POST" style="display:inline;">
+                                                                <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
                                                                     <input type="hidden" name="status" value="{{ status.value }}">
                                                                     <button type="submit" class="dropdown-item">{{ status.value }}</button>
                                                                 </form>
@@ -69,17 +69,17 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div class="col-md-1 text-center">
+                                            <div class="col-md-2 text-center">
                                                 <a href="{{ row.Job.source }}" target="_blank" class="btn btn-info">View Job</a>
                                             </div>
                                             <div class="col-md-1 text-center">
-                                                <form action="{{ url_for('archive_application', id=row.UserJob.id) }}" method="POST" style="display:inline;">
+                                                <form action="{{ url_for('archive_application', job_id=row.UserJob.id) }}" method="POST" style="display:inline;">
                                                     <input type="hidden" name="is_archived" value="true">
                                                     <button type="submit" class="btn btn-warning">Archive</button>
                                                 </form>
                                             </div>
                                             <div class="col-md-1 text-center">
-                                                <form action="{{ url_for('remove_job', id=row.Job.id) }}" method="POST" style="display:inline;">
+                                                <form action="{{ url_for('remove_job', job_id=row.Job.id) }}" method="POST" style="display:inline;">
                                                     <button type="button" class="btn-sm" style="background: none; border: none;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ row.Job.id }}">
                                                         <i class="bi bi-trash" style="color: rgb(197, 195, 195); font-size: 1.5rem;"></i>
                                                     </button>
@@ -95,7 +95,7 @@
                                                                 </div>
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                    <form action="{{ url_for('remove_job', id=row.Job.id) }}" method="POST" style="display:inline;">
+                                                                    <form action="{{ url_for('remove_job', job_id=row.Job.id) }}" method="POST" style="display:inline;">
                                                                         <button type="submit" class="btn btn-danger">Delete</button>
                                                                     </form>
                                                                 </div>
