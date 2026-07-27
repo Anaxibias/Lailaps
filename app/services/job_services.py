@@ -13,6 +13,7 @@ class JobOperationStatus(Enum):
     UNSUPPORTED_DOMAIN = auto()
     URL_NOTFOUND = auto()
     COMMIT_FAILED = auto()
+    INTERNAL_ERROR = auto()
 
 
 def create_job_from_url(job_url, user_id, db):
@@ -29,12 +30,17 @@ def create_job_from_url(job_url, user_id, db):
         
     # If not, proceed to add it
     job = db.session.scalar(sa.select(Job).where(Job.source == job_url))
+
+    flag = JobOperationStatus.CREATED
     
     if job is None:
         title, company = fetch_job_details(job_url)
 
-        job = Job(source=job_url, job_title=title, company=company, description="")
-
+        if title is None or company is None:
+            job = Job(source=job_url, job_title="", company="", description="")
+            flag = JobOperationStatus.INTERNAL_ERROR
+        else:
+            job = Job(source=job_url, job_title=title, company=company, description="")
     try:
         job.users.add(user)
         db.session.add(job)
@@ -43,7 +49,7 @@ def create_job_from_url(job_url, user_id, db):
         db.session.rollback()
         return JobOperationStatus.COMMIT_FAILED
 
-    return JobOperationStatus.CREATED
+    return flag
 
 def create_job_from_info(job_title, job_company, user_id, db):
 
@@ -111,6 +117,9 @@ def update_job_status(job_id, user_id, status, db):
     job_to_update = db.session.scalar(sa.select(UserJob).where(UserJob.job_id == job_id, UserJob.user_id == user_id))
     
     if job_to_update:
+        if job_to_update.is_archived:
+            job_to_update.is_archived = False
+
         job_to_update.application_status = app_status
         db.session.commit()
     else:

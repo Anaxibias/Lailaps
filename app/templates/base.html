@@ -14,31 +14,25 @@
         <link rel="icon" type="image/x-icon" href="/static/images/favicon.png">
     </head>
     <body>
-        <div class="navbar navbar-dark bg-dark py-1">
+        <div class="navbar navbar-dark py-1">
             <div class="container-fluid">
                 <div class="d-flex flex-column align-items-center">
-                        <a class="ps-3 pt-1 mt-1 d-flex align-items-center mb-0 pb-0 text-decoration-none" style="font-family: 'Kufam', sans-serif; font-size: 3rem; color: #e8e8e8;" href="{{ url_for('home')}}">
-                            <img src="{{ url_for('static', filename='images/lailaps-logo-full.png') }}" alt="Lailaps Logo" width="280" height="90" class="mt-0">
+                        <a class="ps-4 pt-2 mt-2 d-flex align-items-center mb-0 pb-0 text-decoration-none" style="font-family: 'Kufam', sans-serif; font-size: 3rem; color: #e8e8e8;" href="{{ url_for('home')}}">
+                            <img src="{{ url_for('static', filename='images/lailaps-logo-full.png') }}" alt="Lailaps Logo" width="216" height="72" class="mt-0">
                         </a>
                     </div>
                 {% if current_user.is_authenticated %}
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mr-auto ps-3">
+                <div class="dropdown me-5 align-items-center">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ current_user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
                         {% if request.path == url_for('dashboard') %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('profile', username=current_user.username) }}">Profile</a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ url_for('profile', username=current_user.username) }}">Profile</a></li>
                         {% elif request.path == url_for('profile', username=current_user.username) %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a></li>
                         {% endif %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                        </li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
                     </ul>
                 </div>
                 {% endif %}
@@ -56,7 +50,7 @@
             {% endwith %}
         </div>
 
-        <div class="container-fluid mt-3">
+        <div class="container-xxl mt-3">
         {% block content %}
         {% endblock %}
         </div>
@@ -74,6 +68,12 @@
                 });
             });
 
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
             document.addEventListener('click', function (event) {
                 var isClickInsideNavbar = document.querySelector('.navbar').contains(event.target);
                 var navbarCollapse = document.querySelector('#navbarNav');
@@ -83,6 +83,29 @@
                     var toggler = document.querySelector('.navbar-toggler');
                     toggler.click();
                 }
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const urlInput = document.getElementById('url-input');
+                const titleInput = document.getElementById('title-input');
+                const companyInput = document.getElementById('company-input');
+
+                // Clear manual inputs if user types a URL
+                urlInput.addEventListener('input', function() {
+                    if (this.value.trim() !== '') {
+                        titleInput.value = '';
+                        companyInput.value = '';
+                    }
+                });
+
+                // Clear URL input if user types title or company
+                [titleInput, companyInput].forEach(input => {
+                    input.addEventListener('input', function() {
+                        if (this.value.trim() !== '') {
+                            urlInput.value = '';
+                        }
+                    });
+                });
             });
         </script>
         {% endblock %}

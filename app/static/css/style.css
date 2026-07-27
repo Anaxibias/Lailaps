@@ -1,9 +1,10 @@
 header {
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family:'Merriweather Sans', sans-serif;
 }
+
 body {
-    background-image: radial-gradient(ellipse at top, #155e48, #171f3b);
-    background-repeat: no-repeat;
+    /* background-color: #081726; */
+    background: linear-gradient(0deg, #081726 85%, #10484A 100%);
     min-height: 100vh;
     font-family:'Merriweather Sans', sans-serif;
     color: #dbdbdb;
@@ -11,32 +12,102 @@ body {
 
 /* Custom button style to match header */
 .btn-primary {
-    background-color: #212529; /* Matches Bootstrap's bg-dark */
-    border-color: #212529;
+    background-color: #eb6a25; /* Matches Bootstrap's bg-dark */
+    border-color: #eb6a25;
+    color: #081726;
 }
 
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
-    background-color: #343a40; /* Slightly lighter shade for hover state */
-    border-color: #343a40;
+    transform: translateY(-2px);
+    background-color: #fd7c36; /* Slightly lighter shade for hover state */
+    border-color: #fd7c36;
+    color: #081726;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
-
+/*
 .dropdown-toggle::after {
     display: none;
 }
+*/
+.job-card {
+    background-color: transparent;
+    border: 1px solid #8c8c8c; /* Simulating border-secondary */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
 
-.badge-not-applied {
-    background-color: #C49F1B;
-    color: #212529; /* Setting text color to white for better contrast */
+.job-card:hover {
+    transform: translateY(-3px);
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: #dbdbdb;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .badge-applied {
-    background-color: #2DA883;
-    color: #212529;
+    background-color: #1d7678;
+    color: #081726;
 }
 
-.badge-interviewing {
-    background-color: #6F81C8;
-    color: #212529;
+.badge-archived {
+    background-color: #8c8c8c;
+    color: #081726;
+}
+
+.badge-not-applied {
+    background-color: #38c8ca;
+    color: #081726;
+}
+
+.badge-custom {
+    padding: 0.5em 0.9em;
+    font-size: 0.9rem;
+}
+
+.job-title-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.job-title-link:hover {
+    text-decoration: underline;
+}
+
+.action-icon {
+    color: #8c8c8c;
+    transition: color 0.3s ease;
+}
+
+.action-icon:hover {
+    color: rgb(197, 195, 195);
+}
+
+.dropdown-menu-dark {
+    background-color: rgba(29, 118, 120, 0.2);
+    border-color: #ffffff33;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: #dbdbdb;
+}
+
+.dropdown-menu-dark .dropdown-item:hover,
+.dropdown-menu-dark .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.accent-link {
+    color: #8c8c8c;
+    text-decoration: none;
+}
+
+.accent-link:hover {
+    color: #dbdbdb;
+    text-decoration: underline;
 }

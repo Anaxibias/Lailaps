@@ -77,14 +77,6 @@ def call_serper(search_string):
 
 def fetch_job_details(job_url):
 
-    # search_results = DDGS().text(job_url, max_results=1)
-
-    # if len(search_results) < 1:
-    #     return "unknown", "unknown"
-
-    # result_headline = search_results[0]["title"]
-    # result_body = search_results[0]["body"]
-
     query = f'''Convert this messy job URL into a highly targeted Google Search query designed to find the original, canonical job posting.
 
                 URL: {job_url}
@@ -102,6 +94,12 @@ def fetch_job_details(job_url):
 
     search_string = query_gemini(query, "string")
     json_response = call_serper(search_string)
+    if not json_response:
+        search_string = query_gemini(query, "string")
+        json_response = call_serper(search_string) 
+
+    if not json_response.get("organic"):
+        return None, None
 
     for obj in json_response.get("organic", []):
         headline = obj["title"]
@@ -117,7 +115,7 @@ def fetch_job_details(job_url):
 
                 Return strictly a JSON object in this format {{"company": "company-name", "job_title": "job-title"}}'''
 
-    response = query_gemini(query, "json")
+    response = query_gemini(query, "json") 
     
     company = response.get('company') or ''
     job_title = response.get('job_title') or ''

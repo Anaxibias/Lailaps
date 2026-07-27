@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Login</h1>
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
         <div class="col-5">
             <form method="POST" action="" novalidate>
@@ -20,7 +19,7 @@
                 <div class="mb-3">
                     {{ form.submit(class="btn btn-primary") }}
                 </div>
-                <p>Don't have an account? <a class="btn btn-link" href="/register">Sign Up</a></p>
+                <p>Don't have an account? <a class="accent-link" href="{{ url_for('register') }}">Sign Up</a></p>
             </form>
         </div>
     </div>

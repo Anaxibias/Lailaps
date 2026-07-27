@@ -1,8 +1,7 @@
-from typing import Optional
 import enum
+from datetime import datetime, timezone
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import db, login
@@ -21,7 +20,7 @@ class User(UserMixin, db.Model):
     username: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, nullable=False)
     email: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, nullable=False)
     password: so.Mapped[str] = so.mapped_column(sa.String(255), nullable=False)
-    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, default=datetime.utcnow)
+    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     jobs: so.WriteOnlyMapped['Job'] = so.relationship(secondary='user_jobs', back_populates='users')
 
@@ -35,8 +34,8 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password, pw)
 
 @login.user_loader
-def load_user(id):
-    return db.session.get(User, int(id))
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
 
 class Job(db.Model):
     __tablename__ = 'jobs'
@@ -45,7 +44,7 @@ class Job(db.Model):
     company: so.Mapped[str] = so.mapped_column(sa.String(255))
     source: so.Mapped[str] = so.mapped_column(sa.Text)
     description: so.Mapped[str] = so.mapped_column(sa.Text)
-    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, default=datetime.utcnow)
+    created_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     users: so.WriteOnlyMapped['User'] = so.relationship(secondary='user_jobs', back_populates='jobs')
 
