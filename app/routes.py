@@ -61,45 +61,63 @@ def dashboard():
     info_form = InfoForm()
     if request.method == 'POST':
 
-        if url_form.submit.data and url_form.validate_on_submit():
-            job_url = url_form.url.data
+        has_url = bool(url_form.data and url_form.url.data.strip())
+        has_title = bool(info_form.data and info_form.job_title.data.strip())
+        has_company = bool(info_form.data and info_form.job_company.data.strip())
 
-            status = job_services.create_job_from_url(job_url, current_user.id, db)
-            if status is job_services.JobOperationStatus.UNSUPPORTED_DOMAIN:
-                flash('This domain is currently unsupported; manual entry of job details required')
-                return redirect(url_for('dashboard'))
-            if status is job_services.JobOperationStatus.EXISTS: 
-                flash('You have already saved this job.', 'warning')
-                return redirect(url_for('dashboard'))
-            elif status is job_services.JobOperationStatus.NOTFOUND:
-                flash('User not found', 'warning')
-                return redirect(url_for('dashboard'))
-            elif status is job_services.JobOperationStatus.COMMIT_FAILED:
-                flash('Internal Error. Job not saved', 'warning')
-            elif status is job_services.JobOperationStatus.CREATED:
-                flash('Job saved!', 'success')
-                return redirect(url_for('dashboard'))
-        
-        elif info_form.submit.data and info_form.validate_on_submit():
-            title = info_form.job_title.data
-            company = info_form.job_company.data
+        print(f"Flags -> URL: {has_url} | Title: {has_title} | Company: {has_company}", flush=True)
 
-            status = job_services.create_job_from_info(title, company, current_user.id, db)
+        if has_url:
+            if url_form.data and url_form.validate_on_submit():
 
-            if status is job_services.JobOperationStatus.EXISTS: 
-                flash('FIXME - need verification message popup')
-                return redirect(url_for('dashboard'))
-            elif status is job_services.JobOperationStatus.NOTFOUND:
-                flash('User not found', 'warning')
-                return redirect(url_for('dashboard'))
-            elif status is job_services.JobOperationStatus.URL_NOTFOUND:
-                flash('Job saved, but automation could not find a matching URL. Edit your job record to add a URL', 'warning')
-                return redirect(url_for('dashboard'))
-            elif status is job_services.JobOperationStatus.COMMIT_FAILED:
-                flash('Internal Error. Job not saved', 'warning')
-            elif status is job_services.JobOperationStatus.CREATED:
-                flash('Job saved!', 'success')
-                return redirect(url_for('dashboard'))            
+                job_url = url_form.url.data
+
+                status = job_services.create_job_from_url(job_url, current_user.id, db)
+                if status is job_services.JobOperationStatus.UNSUPPORTED_DOMAIN:
+                    flash('This domain is currently unsupported; manual entry of job details required')
+                    return redirect(url_for('dashboard'))
+                if status is job_services.JobOperationStatus.EXISTS: 
+                    flash('You have already saved this job.', 'warning')
+                    return redirect(url_for('dashboard'))
+                elif status is job_services.JobOperationStatus.NOTFOUND:
+                    flash('User not found', 'warning')
+                    return redirect(url_for('dashboard'))
+                elif status is job_services.JobOperationStatus.COMMIT_FAILED:
+                    flash('Internal Error. Job not saved', 'warning')
+                elif status is job_services.JobOperationStatus.CREATED:
+                    flash('Job saved!', 'success')
+                    return redirect(url_for('dashboard'))
+                
+        elif has_title and has_company:
+            if info_form.data and info_form.validate_on_submit():
+                title = info_form.job_title.data
+                company = info_form.job_company.data
+
+                status = job_services.create_job_from_info(title, company, current_user.id, db)
+
+                if status is job_services.JobOperationStatus.EXISTS: 
+                    flash('FIXME - need verification message popup')
+                    return redirect(url_for('dashboard'))
+                elif status is job_services.JobOperationStatus.NOTFOUND:
+                    flash('User not found', 'warning')
+                    return redirect(url_for('dashboard'))
+                elif status is job_services.JobOperationStatus.URL_NOTFOUND:
+                    flash('Job saved, but automation could not find a matching URL. Edit your job record to add a URL', 'warning')
+                    return redirect(url_for('dashboard'))
+                elif status is job_services.JobOperationStatus.COMMIT_FAILED:
+                    flash('Internal Error. Job not saved', 'warning')
+                elif status is job_services.JobOperationStatus.CREATED:
+                    flash('Job saved!', 'success')
+                    return redirect(url_for('dashboard'))
+
+        elif has_title or has_company:
+            if not has_title:
+                flash('Please enter a job title')
+            elif not has_company:
+                flash('Please enter a company name')
+
+        else:
+            flash('Please enter a job listing URL or fill out the job title and company')            
 
     # GET request logic
 

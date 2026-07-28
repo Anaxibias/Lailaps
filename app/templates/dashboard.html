@@ -4,7 +4,7 @@
 <div style="height: 100px;"></div>
 
     <div class="container-fluid px-0" style="max-width: 1600px; margin: 0 auto;">
-        <form method="POST" action="{{ url_for('dashboard') }}">
+        <form method="POST" action="{{ url_for('dashboard') }}" novalidate>
             {{ url_form.hidden_tag() }}
             {{ info_form.hidden_tag() }}
             <div class="mb-3">
@@ -22,7 +22,7 @@
                     </div>
                 </div>
             <div class="text-center">
-                <button type="submit" name="submit" class="btn btn-primary" style="width: 150px;">Save Job</button>
+                <button type="submit" class="btn btn-primary" style="width: 150px;">Save Job</button>
             </div>
         </form>
         <div class="mt-4">
