@@ -107,6 +107,14 @@
                     });
                 });
             });
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+            // Moves all modals to <body> automatically so Bootstrap CSS transforms don't cause flickering
+                document.querySelectorAll('.modal').forEach(function(modal) {
+                    document.body.appendChild(modal);
+            });
+        });
         </script>
         {% endblock %}
     </body>

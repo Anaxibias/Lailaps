@@ -1,3 +1,4 @@
 .env
 venv
 app/auth
+__pycache__
