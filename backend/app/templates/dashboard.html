@@ -36,7 +36,22 @@
                                     <div class="card job-card text-white h-100">
                                         <div class="card-body">
                                             <div class="row align-items-center">
-                                                <div class="col-md-5 text-start">
+                                                <div class="col-md-1 d-flex justify-content-center">
+                                                    <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
+                                                        {% if row.UserJob.application_status.value == 'Applied' %}
+                                                            <input type="hidden" name="status" value="Not Applied">
+                                                            <button type="submit" class="btn btn-link p-0" style="color: #38c8ca;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark as Not Applied">
+                                                                <i class="bi bi-check-circle" style="font-size: 1.1rem;"></i>
+                                                            </button>
+                                                        {% else %}
+                                                            <input type="hidden" name="status" value="Applied">
+                                                            <button type="submit" class="btn btn-link p-0 text-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark as Applied">
+                                                                <i class="bi bi-check-circle" style="font-size: 1.1rem;"></i>
+                                                            </button>
+                                                        {% endif %}
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-4 text-start">
                                                     <a href="{{ row.Job.source }}" target="_blank" class="job-title-link">
                                                         {{ row.Job.job_title }}
                                                     </a>
@@ -46,12 +61,10 @@
                                                 </div>
                                                 <div class="col-md-2 d-flex justify-content-center">
                                                     <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
-                                                        {% if row.UserJob.application_status.value == 'Applied' %}
-                                                            <input type="hidden" name="status" value="Not Applied">
-                                                            <button type="submit" class="badge rounded-pill badge-applied badge-custom" style="width: 110px; border: none;">Applied</button>
+                                                        {% if row.UserJob.application_status.value != 'Applied' %}
+                                                            <a href="{{ row.Job.source}}" target="_blank" class="badge rounded-pill badge-not-applied badge-custom" style="width: 110px; text-decoration: none;">Apply Now</a>
                                                         {% else %}
-                                                            <input type="hidden" name="status" value="Applied">
-                                                            <button type="submit" class="badge rounded-pill badge-not-applied badge-custom" style="width: 110px; border: none;">Apply Now</button>
+                                                            <a href="{{ row.Job.source}}" target="_blank" class="badge rounded-pill badge-applied badge-custom" style="width: 110px; text-decoration: none;">View Listing</a>
                                                         {% endif %}
                                                     </form>
                                                 </div>
