@@ -54,8 +54,13 @@ body {
     color: #081726;
 }
 
-.badge-not-applied {
+.badge-saved {
     background-color: #38c8ca;
+    color: #081726;
+}
+
+.badge-not-applied {
+    background-color: #eb6a25;
     color: #081726;
 }
 
