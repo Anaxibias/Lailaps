@@ -47,7 +47,8 @@ const Layout = {
                     href: "#!/login"
                 }, "Login")
             ])
-        ]);
+        ]),
+        m("main", { role: "main" }, vnode.children);
     }
 };
 
