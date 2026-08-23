@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if current_user.is_authenticated %}
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <p>This is your dashboard.</p>
+{% else %}
+    <div class="d-flex justify-content-center align-items-center mt-5" style="min-height: 40vh;">
+        <div class="col-6">
+            <div class="card p-4 justify-content-center align-items-center" style="background-color: rgba(255, 255, 255, 0.1); border-radius: 15px; color: #e8e8e8;">
+                <h2 class="mb-3">Welcome to Lailaps!</h2>
+                <p>Please log in or register to access your dashboard.</p>
+                <div class="d-flex justify-content-center mt-3">
+                    <a class="btn btn-primary me-2" href="{{ url_for('login') }}">Login</a>
+                    <a class="btn btn-secondary" href="{{ url_for('register') }}">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex flex-column align-items-center mt-5">
+        <h2 class="mb-3">Name Origin</h2>
+        <div class="d-flex justify-content-center align-items-center pb-5" style="max-width: 600px; text-align: center;">
+            <p> In Greek mythology, Lailaps was a dog destined to always catch what it pursued. The job search is a relentless hunt, and you need a tool built to keep up.
+                Lailaps exists to make that part easier, so you can spend less time managing tabs and more time pursuing your next role. 
+        Lailaps is designed to be your faithful companion through the chaos—organizing your applications, tracking your progress, and keeping you focused so you can secure the role you're chasing.</p>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

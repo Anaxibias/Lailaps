@@ -11,3 +11,8 @@ Flask-Migrate
 python-dotenv
 watchdog
 gunicorn
+beautifulsoup4
+mechanicalsoup
+ddgs
+rapidfuzz
+google-genai

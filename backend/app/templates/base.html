@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+        <title>Dashboard</title>
+        <link rel="icon" type="image/x-icon" href="/static/images/favicon.png">
+    </head>
+    <body>
+        <div class="navbar navbar-dark py-1">
+            <div class="container-fluid">
+                <div class="d-flex flex-column align-items-center">
+                        <a class="ps-4 pt-2 mt-2 d-flex align-items-center mb-0 pb-0 text-decoration-none" style="font-family: 'Kufam', sans-serif; font-size: 3rem; color: #e8e8e8;" href="{{ url_for('home')}}">
+                            <img src="{{ url_for('static', filename='images/lailaps-logo-full.png') }}" alt="Lailaps Logo" width="216" height="72" class="mt-0">
+                        </a>
+                    </div>
+                {% if current_user.is_authenticated %}
+                <div class="dropdown me-5 align-items-center">
+                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ current_user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        {% if request.path == url_for('dashboard') %}
+                        <li><a class="dropdown-item" href="{{ url_for('profile', username=current_user.username) }}">Profile</a></li>
+                        {% elif request.path == url_for('profile', username=current_user.username) %}
+                        <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div id="flash-container" style="position: fixed; top: 360px; left: 50%; transform: translateX(-50%); z-index: 1050;">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category or 'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="container-xxl mt-3">
+        {% block content %}
+        {% endblock %}
+        </div>
+
+        {% block scripts %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Auto-hide flash messages after 5 seconds
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const flashMessages = document.querySelectorAll('#flash-container .alert');
+                flashMessages.forEach(function(message) {
+                    setTimeout(function() {
+                        new bootstrap.Alert(message).close();
+                    }, 5000);
+                });
+            });
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            document.addEventListener('click', function (event) {
+                var isClickInsideNavbar = document.querySelector('.navbar').contains(event.target);
+                var navbarCollapse = document.querySelector('#navbarNav');
+                var isNavbarOpen = navbarCollapse.classList.contains('show');
+
+                if (!isClickInsideNavbar && isNavbarOpen) {
+                    var toggler = document.querySelector('.navbar-toggler');
+                    toggler.click();
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const urlInput = document.getElementById('url-input');
+                const titleInput = document.getElementById('title-input');
+                const companyInput = document.getElementById('company-input');
+
+                // Clear manual inputs if user types a URL
+                urlInput.addEventListener('input', function() {
+                    if (this.value.trim() !== '') {
+                        titleInput.value = '';
+                        companyInput.value = '';
+                    }
+                });
+
+                // Clear URL input if user types title or company
+                [titleInput, companyInput].forEach(input => {
+                    input.addEventListener('input', function() {
+                        if (this.value.trim() !== '') {
+                            urlInput.value = '';
+                        }
+                    });
+                });
+            });
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+            // Moves all modals to <body> automatically so Bootstrap CSS transforms don't cause flickering
+                document.querySelectorAll('.modal').forEach(function(modal) {
+                    document.body.appendChild(modal);
+            });
+        });
+        </script>
+        {% endblock %}
+    </body>
+</html>
