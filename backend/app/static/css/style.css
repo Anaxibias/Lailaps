@@ -116,3 +116,62 @@ body {
     color: #dbdbdb;
     text-decoration: underline;
 }
+
+.saved-job-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    width: auto;
+    margin-left: auto;
+}
+
+.saved-job-functions {
+    margin-left: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+    .saved-job-row {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0.5rem;
+    }
+
+    .saved-job-status,
+    .saved-job-main,
+    .saved-job-date,
+    .saved-job-action,
+    .saved-job-functions {
+        width: 100% !important;
+        max-width: 100% !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .saved-job-main {
+        text-align: center !important;
+    }
+
+    .saved-job-functions {
+        justify-content: center !important;
+    }
+
+    .saved-job-action form {
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    .saved-job-bottom-row {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 0.75rem !important;
+        width: 100% !important;
+    }
+
+    .saved-job-functions {
+        justify-content: flex-end !important;
+        margin-left: auto !important;
+    }
+}

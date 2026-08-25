@@ -17,10 +17,10 @@
         <div class="navbar navbar-dark py-1">
             <div class="container-fluid">
                 <div class="d-flex flex-column align-items-center">
-                        <a class="ps-4 pt-2 mt-2 d-flex align-items-center mb-0 pb-0 text-decoration-none" style="font-family: 'Kufam', sans-serif; font-size: 3rem; color: #e8e8e8;" href="{{ url_for('home')}}">
-                            <img src="{{ url_for('static', filename='images/lailaps-logo-full.png') }}" alt="Lailaps Logo" width="216" height="72" class="mt-0">
-                        </a>
-                    </div>
+                    <a class="ps-4 pt-2 mt-2 d-flex align-items-center mb-0 pb-0 text-decoration-none" style="font-family: 'Kufam', sans-serif; font-size: 3rem; color: #e8e8e8;" href="{{ url_for('home')}}">
+                        <img src="{{ url_for('static', filename='images/lailaps-logo-full.png') }}" alt="Lailaps Logo" width="216" height="72" class="mt-0">
+                    </a>
+                </div>
                 {% if current_user.is_authenticated %}
                 <div class="dropdown me-5 align-items-center">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

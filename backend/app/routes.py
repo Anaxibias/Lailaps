@@ -61,11 +61,9 @@ def dashboard():
     info_form = InfoForm()
     if request.method == 'POST':
 
-        has_url = bool(url_form.data and url_form.url.data.strip())
-        has_title = bool(info_form.data and info_form.job_title.data.strip())
-        has_company = bool(info_form.data and info_form.job_company.data.strip())
-
-        print(f"Flags -> URL: {has_url} | Title: {has_title} | Company: {has_company}", flush=True)
+        has_url = bool((url_form.url.data or "").strip())
+        has_title = bool((info_form.job_title.data or "").strip())
+        has_company = bool((info_form.job_company.data or "").strip())
 
         if has_url:
             if url_form.data and url_form.validate_on_submit():

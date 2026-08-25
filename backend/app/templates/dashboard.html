@@ -26,17 +26,22 @@
             </div>
         </form>
         <div class="mt-4">
-            <h2>Saved Jobs</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Saved Jobs</h2>
+                <div style="width: 220px; max-width: 100%;">
+                    <input id="saved-job-filter" type="text" class="form-control form-control-sm" placeholder="Filter jobs" aria-label="Filter saved jobs">
+                </div>
+            </div>
             <div class="border border-light p-3 rounded" style="background-color: rgba(255, 255, 255, 0.1);">
                 {% if job_listings %}
-                    <div class="row g-3">
+                    <div id="saved-jobs-list" class="row g-3">
                         {% for row in job_listings %}
                             {% if row.UserJob.is_archived != True %}
-                                <div class="col-12">
+                                <div class="col-12 job-row" data-job-search="{{ row.Job.job_title }} {{ row.Job.company }}">
                                     <div class="card job-card text-white h-100">
                                         <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-1 d-flex justify-content-center">
+                                            <div class="row align-items-center g-2 saved-job-row">
+                                                <div class="col-md-1 d-flex justify-content-center saved-job-status">
                                                     <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
                                                         {% if row.UserJob.application_status.value == 'Applied' %}
                                                             <input type="hidden" name="status" value="Not Applied">
@@ -51,35 +56,36 @@
                                                         {% endif %}
                                                     </form>
                                                 </div>
-                                                <div class="col-md-4 text-start">
-                                                    <a href="{{ row.Job.source }}" target="_blank" class="job-title-link">
-                                                        {{ row.Job.job_title }}
-                                                    </a>
+                                                <div class="col-md-5 text-start saved-job-main">
+                                                    <a href="{{ row.Job.source }}" target="_blank" class="job-title-link" style="font-size: 1.05rem;">{{ row.Job.job_title }}</a>
+                                                    <div class="card-text mt-1" style="font-size: 0.85rem; color: rgba(219, 219, 219, 0.8);">{{ row.Job.company }}</div>
                                                 </div>
-                                                <div class="col-md-4 text-start">
-                                                    <p class="card-text mb-0">{{ row.Job.company }}</p>
+                                                <div class="col-md-3 text-start saved-job-date">
+                                                    <div class="card-text mb-0" style="font-size: 0.8rem; color: rgba(219, 219, 219, 0.7);">{{ row.UserJob.created_at.strftime('%Y-%m-%d') }}</div>
                                                 </div>
-                                                <div class="col-md-2 d-flex justify-content-center">
-                                                    <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
-                                                        {% if row.UserJob.application_status.value != 'Applied' %}
-                                                            <a href="{{ row.Job.source}}" target="_blank" class="badge rounded-pill badge-not-applied badge-custom" style="width: 110px; text-decoration: none;">Apply Now</a>
-                                                        {% else %}
-                                                            <a href="{{ row.Job.source}}" target="_blank" class="badge rounded-pill badge-applied badge-custom" style="width: 110px; text-decoration: none;">View Listing</a>
-                                                        {% endif %}
-                                                    </form>
-                                                </div>
-                                                <div class="col-md-1 d-flex justify-content-end">
-                                                    <form action="{{ url_for('archive_application', job_id=row.UserJob.id) }}" method="POST" style="display:inline;">
-                                                        <input type="hidden" name="is_archived" value="true">
-                                                        <button type="submit" class="btn" style="background-color: transparent; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Archive">
-                                                            <i class="bi bi-archive action-icon" style="font-size: 1.25rem;"></i>
-                                                        </button>
-                                                    </form>
-                                                    <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
-                                                        <button type="button" class="btn" style="background: none; border: none;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ row.Job.id }}">
-                                                            <i class="bi bi-trash action-icon" style="font-size: 1.25rem;"></i>
-                                                        </button>
-                                                    </span>
+                                                <div class="col-md-3 d-flex justify-content-md-end justify-content-start saved-job-action">
+                                                    <div class="saved-job-bottom-row">
+                                                        <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
+                                                            {% if row.UserJob.application_status.value != 'Applied' %}
+                                                                <a href="{{ row.Job.source}}" target="_blank" class="badge rounded-pill badge-not-applied badge-custom" style="width: 110px; text-decoration: none;">Apply Now</a>
+                                                            {% else %}
+                                                                <a href="{{ row.Job.source}}" target="_blank" class="badge rounded-pill badge-applied badge-custom" style="width: 110px; text-decoration: none;">View Listing</a>
+                                                            {% endif %}
+                                                        </form>
+                                                        <div class="d-flex align-items-center justify-content-end saved-job-functions">
+                                                            <form action="{{ url_for('archive_application', job_id=row.UserJob.job_id) }}" method="POST" style="display:inline;">
+                                                                <input type="hidden" name="is_archived" value="true">
+                                                                <button type="submit" class="btn" style="background-color: transparent; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Archive">
+                                                                    <i class="bi bi-archive action-icon" style="font-size: 1.25rem;"></i>
+                                                                </button>
+                                                            </form>
+                                                            <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
+                                                                <button type="button" class="btn" style="background: none; border: none;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ row.Job.id }}">
+                                                                    <i class="bi bi-trash action-icon" style="font-size: 1.25rem;"></i>
+                                                                </button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                     <div class="modal fade" id="confirmDeleteModal{{ row.Job.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ row.Job.id }}" aria-hidden="true">
                                                         <div class="modal-dialog">
                                                             <div class="modal-content bg-dark text-white">
@@ -111,6 +117,24 @@
                     <p class="mb-0">No job listings saved yet.</p>
                 {% endif %}
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const filterInput = document.getElementById('saved-job-filter');
+                    if (!filterInput) return;
+
+                    const rows = Array.from(document.querySelectorAll('#saved-jobs-list .job-row'));
+
+                    filterInput.addEventListener('input', function () {
+                        const term = filterInput.value.trim().toLowerCase();
+
+                        rows.forEach(function (row) {
+                            const searchText = (row.dataset.jobSearch || '').toLowerCase();
+                            const matches = !term || searchText.includes(term);
+                            row.style.display = matches ? '' : 'none';
+                        });
+                    });
+                });
+            </script>
                 <div class="mt-4">
                 <h2>Archived</h2>
                     <div class="border border-light p-3 rounded" style="background-color: rgba(255, 255, 255, 0.1);">
@@ -118,36 +142,45 @@
                         <div class="row g-3">
                             {% for row in job_listings %}
                                 {% if row.UserJob.is_archived == True %}
-                                    <div class="col-12">
-                                        <div class="card bg-transparent border-secondary text-white h-100">
+                                    <div class="col-12 job-row" data-job-search="{{ row.Job.job_title }} {{ row.Job.company }}">
+                                        <div class="card job-card text-white h-100">
                                             <div class="card-body">
-                                                <div class="row align-items-center">
-                                                    <div class="col-md-5 text-start">
-                                                        <a href="{{ row.Job.source }}" target="_blank" class="job-title-link">
-                                                            <p class="card-text mb-0">{{ row.Job.job_title }}</p>
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-md-4 text-start">
-                                                        <p class="card-text mb-0">{{ row.Job.company }}</p>
-                                                    </div>
-                                                    <div class="col-md-2 d-flex justify-content-center">
+                                                <div class="row align-items-center g-2 saved-job-row">
+                                                    <div class="col-md-1 d-flex justify-content-center saved-job-status">
                                                         <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
                                                             <input type="hidden" name="status" value="Not Applied">
-                                                            <button type="submit" class="badge rounded-pill badge-archived badge-custom" style="width: 110px; border: none;">Archived</button>
+                                                            <button type="submit" class="btn btn-link p-0 text-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Mark as Not Applied">
+                                                                <i class="bi bi-check-circle" style="font-size: 1.1rem;"></i>
+                                                            </button>
                                                         </form>
                                                     </div>
-                                                    <div class="col-md-1 d-flex justify-content-end">
-                                                        <form action="{{ url_for('archive_application', job_id=row.UserJob.id) }}" method="POST" style="display:inline;">
-                                                            <input type="hidden" name="is_archived" value="true">
-                                                            <button type="submit" class="btn" style="background-color: transparent; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Archive">
-                                                                <i class="bi bi-archive action-icon" style="font-size: 1.25rem;"></i>
-                                                            </button>
-                                                        </form>
-                                                        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
-                                                            <button type="button" class="btn" style="background: none; border: none;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ row.Job.id }}">
-                                                                <i class="bi bi-trash action-icon" style="font-size: 1.25rem;"></i>
-                                                            </button>
-                                                        </span>
+                                                    <div class="col-md-5 text-start saved-job-main">
+                                                        <a href="{{ row.Job.source }}" target="_blank" class="job-title-link" style="font-size: 1.05rem;">{{ row.Job.job_title }}</a>
+                                                        <div class="card-text mt-1" style="font-size: 0.85rem; color: rgba(219, 219, 219, 0.8);">{{ row.Job.company }}</div>
+                                                    </div>
+                                                    <div class="col-md-3 text-start saved-job-date">
+                                                        <div class="card-text mb-0" style="font-size: 0.8rem; color: rgba(219, 219, 219, 0.7);">{{ row.UserJob.created_at.strftime('%Y-%m-%d') }}</div>
+                                                    </div>
+                                                    <div class="col-md-3 d-flex justify-content-md-end justify-content-start saved-job-action">
+                                                        <div class="saved-job-bottom-row">
+                                                            <form action="{{ url_for('update_status', job_id=row.Job.id) }}" method="POST" style="display:inline;">
+                                                                <input type="hidden" name="status" value="Not Applied">
+                                                                <button type="submit" class="badge rounded-pill badge-archived badge-custom" style="width: 110px; border: none;">Archived</button>
+                                                            </form>
+                                                            <div class="d-flex align-items-center justify-content-end saved-job-functions">
+                                                                <form action="{{ url_for('archive_application', job_id=row.UserJob.id) }}" method="POST" style="display:inline;">
+                                                                    <input type="hidden" name="is_archived" value="true">
+                                                                    <button type="submit" class="btn" style="background-color: transparent; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Archive">
+                                                                        <i class="bi bi-archive action-icon" style="font-size: 1.25rem;"></i>
+                                                                    </button>
+                                                                </form>
+                                                                <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
+                                                                    <button type="button" class="btn" style="background: none; border: none;" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ row.Job.id }}">
+                                                                        <i class="bi bi-trash action-icon" style="font-size: 1.25rem;"></i>
+                                                                    </button>
+                                                                </span>
+                                                            </div>
+                                                        </div>
                                                         <div class="modal fade" id="confirmDeleteModal{{ row.Job.id }}" tabindex="-1" aria-labelledby="confirmDeleteModalLabel{{ row.Job.id }}" aria-hidden="true">
                                                             <div class="modal-dialog">
                                                                 <div class="modal-content bg-dark text-white">
@@ -177,7 +210,8 @@
                         </div>
                     {% else %}
                         <p class="mb-0">No archived job listings.</p>
-                    {% endif %}            
+                    {% endif %}
+                    </div>
                 </div>
             
         </div>
