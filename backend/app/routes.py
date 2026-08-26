@@ -168,3 +168,20 @@ def archive_application(job_id):
         flash('Job not found.', 'danger')
 
     return redirect(url_for('dashboard'))
+
+@app.route('/dashboard/edit/<int:job_id>', methods=['POST'])
+@login_required
+def edit_job(job_id):
+
+    job_url = request.form.get('job_url', '')
+    job_title = request.form.get('job_title', '')
+    job_company = request.form.get('job_company', '')
+
+    status = job_services.update_job_entry(job_id, job_url, job_title, job_company, db)
+
+    if status == job_services.JobOperationStatus.UPDATED:
+        flash('Application updated', 'success')
+    else:
+        flash('Update failed', 'danger')
+
+    return redirect(url_for('dashboard'))

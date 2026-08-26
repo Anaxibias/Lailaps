@@ -139,3 +139,22 @@ def archive_job(job_id, user_id, db):
         return JobOperationStatus.NOTFOUND
 
     return JobOperationStatus.UPDATED
+
+def update_job_entry(job_id, job_url, job_title, job_company, db):
+
+    job_to_update = db.session.scalar(sa.select(Job).where(Job.id == job_id))
+
+    if job_to_update:
+        if job_url:
+            job_to_update.source = job_url
+        if job_title:
+            job_to_update.job_title = job_title
+        if job_company:
+            job_to_update.company = job_company
+
+        db.session.commit()
+
+    else:
+        return JobOperationStatus.NOTFOUND
+
+    return JobOperationStatus.UPDATED

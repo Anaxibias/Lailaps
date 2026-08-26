@@ -9,7 +9,6 @@ import Dashboard from "./pages/Dashboard.js";
 m.route(document.body, "/dashboard", {
     "/dashboard": {
         render: () => {
-            // THIS is the line that does the drop
             return m(Layout, m(Dashboard));
         }
     }

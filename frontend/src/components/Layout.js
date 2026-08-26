@@ -2,7 +2,7 @@ import m from "mithril";
 import logoImg from '../images/lailaps-logo-full.png';
 
 const isAuthenticated = true; // Replace with your actual authentication logic
-const currentUser = { name: "John Doe" }; // Replace with your actual user data
+const currentUser = { name: "John Doe", id: 1 }; // Replace with your actual user data
 
 const Layout = {
     view: (vnode) => {
